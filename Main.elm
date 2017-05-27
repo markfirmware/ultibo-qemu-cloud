@@ -207,7 +207,7 @@ view model =
             [ ( "position" , "fixed" )
             , opacity model False "0"
             , ( "font-family", "monospace" )
-            , ( "font-size", "60px" )
+            , ( "font-size", "40px" )
             , ( "color", "white" )
             ]
           ]
@@ -221,10 +221,9 @@ view model =
             ]
           ]
           (List.map (\(s, f) -> div s <| [ text <| format2 f model.date ])
-            [ ( Animation.render model.style, "Correct Time: %l:%M" )
+            [ ( Animation.render model.style, (locationName model.ip) ++ " Time: %l:%M" )
             , ( [], "%A %r" )
             , ( [], "%B %e%t %Y" )
-            , ( [], locationName model.ip )
             ])
         ]
 
