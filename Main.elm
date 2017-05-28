@@ -16,7 +16,7 @@ import Time exposing (second)
 import Window
 
 
-t = Formatting.s
+-- t = Formatting.s
 
 
 main : Program Never Model Msg
@@ -31,12 +31,33 @@ main =
 
 
 type alias Model =
-    { style : Animation.State
-    , date : Date.Date
-    , size : Window.Size
-    , diagnostic : Bool
+    { size : Window.Size
     , ip : String
     }
+
+
+type alias Project =
+    { name : String
+    , portDigit : Int
+    , page : Bool
+    }
+
+
+projects =
+    [ { name = "WebStatusProgram", portDigit = 0, page = True }
+    , { name = "Example 01-HelloWorld", portDigit = 5, page = False }
+    , { name = "Example 05-TimeDate", portDigit = 1, page = False }
+    , { name = "Example 09-LogOutput", portDigit = 2, page = False }
+    , { name = "Example 17-TextEditor", portDigit = 4, page = False }
+    ]
+
+
+projectPage p ip =
+    "http://" ++ ip ++ ":557" ++ toString p.portDigit ++ "/status/about"
+
+
+vncPage p ip =
+    "http://novnc.com/noVNC/vnc_auto.html?host=" ++ ip ++ "&port=577" ++ toString p.portDigit ++ "&reconnect=1&reconnect_delay=5000"
 
 
 type alias Location =
@@ -62,13 +83,7 @@ locationName ip =
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    ( { style =
-            Animation.style
-                [ Animation.opacity 1.0
-                ]
-      , date = Date.fromTime 0.0
-      , size = { width = 0, height = 0 }
-      , diagnostic = False
+    ( { size = { width = 0, height = 0 }
       , ip = location.host
       }
     , Task.perform Size Window.size
@@ -78,33 +93,13 @@ init location =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Animation.subscription Animate [ model.style ]
-        , Time.every (0.1 * second) Tick
-        , Window.resizes Size
+        [ Window.resizes Size
         ]
 
 
 type Msg
-    = Animate Animation.Msg
-    | Tick Time.Time
-    | Size Window.Size
-    | ToggleDiagnostic
+    = Size Window.Size
     | NewLocation Navigation.Location
-
-
-animationOpacity duration ease opacity =
-    Animation.toWith
-        ( Animation.easing
-            { duration = duration * second
-            , ease = ease
-            }
-        )
-        [ Animation.opacity opacity
-        ]
-
-
-justEntered f prev current n =
-    f prev /= n && f current == n
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -115,36 +110,6 @@ update action model =
             , Cmd.none
             )
 
-        Tick t -> let now = Date.fromTime t in
-            ( { model
-                | date = now
-                , style = if justEntered Date.second model.date now 59 then
-                    Animation.interrupt
-                        [ animationOpacity 0.80 (\x -> x * x) 0
-                        , Animation.wait (0.25 * second)
-                        , animationOpacity 0.10 (\x -> x * x * x * x) 1
-                        ]
-                        model.style
-                  else
-                    model.style
-              }
-            , Cmd.none
-            )
-
-        Animate animMsg ->
-            ( { model
-                | style = Animation.update animMsg model.style
-              }
-            , Cmd.none
-            )
-
-        ToggleDiagnostic ->
-            ( { model
-                | diagnostic = not model.diagnostic
-              }
-            , Cmd.none
-            )
-
         Size s ->
             ( { model
                 | size = s
@@ -152,50 +117,18 @@ update action model =
             , Cmd.none
             )
 
---      _ ->
---          ( model
---          , Cmd.none
---          )
-
-
-format2 f date =
-    let afternoon =
-            if      Date.hour date < 12 then "Morning"
-            else if Date.hour date < 18 then "Afternoon"
-            else if Date.hour date < 21 then "Evening"
-            else                             "Night"
-        d =
-            Date.day date
-        th =
-            if      d == 1 || d == 21 || d == 31 then "st"
-            else if d == 2 || d == 22            then "nd"
-            else if d == 3 || d == 23            then "rd"
-            else                                      "th"
-    in date
-        |> format f
-        |> replace All (regex "%r") (\_ -> afternoon)
-        |> replace All (regex "%t") (\_ -> th)
-
-
-opacity model b o =
-    ( "opacity" , if (xor b model.diagnostic) then "1.0" else o)
-
 
 rootDiv model content =
     div
         [ style
             [ ( "width", "1920px" )
             , ( "height", "1080px" )
-            , ( "overflow", "hidden" )
-            , ( "background-color", "black" )
+--          , ( "overflow", "hidden" )
+            , ( "background-color", "white" )
             , ( "color", "orange" )
             ]
-        , onClick ToggleDiagnostic
         ]
-        (if model.date == Date.fromTime 0 then
-            [ text "" ]
-        else
-            content)
+        content
 
 
 view : Model -> Html Msg
@@ -204,37 +137,17 @@ view model =
         model
         [ div
           [ style
-            [ ( "position" , "fixed" )
-            , opacity model False "0"
-            , ( "font-family", "monospace" )
-            , ( "font-size", "40px" )
-            , ( "color", "white" )
+            [ ( "font-size", "40px" )
             ]
           ]
-          [ text <| "Window.size " ++ toString model.size.width ++ " " ++ toString model.size.height
-          ]
-        , div
-          [ style
-            [ ( "font-size", if model.size.width >= 1400 then "185px" else "150px" )
-            , ( "line-height", "97%" )
-            , opacity model True "0.4"
-            ]
-          ]
-          (List.map (\(s, f) -> div s <| [ text <| format2 f model.date ])
-            [ ( Animation.render model.style, (locationName model.ip) ++ " Time: %l:%M" )
-            , ( [], "%A %r" )
-            , ( [], "%B %e%t %Y" )
-            ])
+          ([ div [] <| [ text <| locationName model.ip ] ] ++
+          (List.map (\project -> div [] <|
+              [ a [ href <| vncPage project model.ip ] [ text project.name ]
+              ] ++
+              (if project.page then
+                  [ text " " 
+                  , (a [ href <| projectPage project model.ip ]
+                       [ text "(built-in web server)" ])
+                  ]
+              else [])) projects))
         ]
-
-
-spaceInt = padLeft 2 ' ' int
-zeroInt = padLeft 2 '0' int
-
-correctTime =
-    t "Correct Time: "
-    <> spaceInt
-    <> t ":"
-    <> zeroInt
-    <> t ":"
-    <> zeroInt

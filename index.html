@@ -15932,142 +15932,47 @@ var _mgold$elm_date_format$Date_Format$format = F2(
 		return A3(_mgold$elm_date_format$Date_Format$localFormat, _mgold$elm_date_format$Date_Local$international, s, d);
 	});
 var _mgold$elm_date_format$Date_Format$formatISO8601 = _mgold$elm_date_format$Date_Format$format('%Y-%m-%dT%H:%M:%SZ');
-var _user$project$Main$zeroInt = A3(
-	_krisajenkins$formatting$Formatting$padLeft,
-	2,
-	_elm_lang$core$Native_Utils.chr('0'),
-	_krisajenkins$formatting$Formatting$int);
-var _user$project$Main$spaceInt = A3(
-	_krisajenkins$formatting$Formatting$padLeft,
-	2,
-	_elm_lang$core$Native_Utils.chr(' '),
-	_krisajenkins$formatting$Formatting$int);
-var _user$project$Main$opacity = F3(
-	function (model, b, o) {
-		return {
-			ctor: '_Tuple2',
-			_0: 'opacity',
-			_1: A2(_elm_lang$core$Basics$xor, b, model.diagnostic) ? '1.0' : o
-		};
-	});
-var _user$project$Main$format2 = F2(
-	function (f, date) {
-		var d = _elm_lang$core$Date$day(date);
-		var th = (_elm_lang$core$Native_Utils.eq(d, 1) || (_elm_lang$core$Native_Utils.eq(d, 21) || _elm_lang$core$Native_Utils.eq(d, 31))) ? 'st' : ((_elm_lang$core$Native_Utils.eq(d, 2) || _elm_lang$core$Native_Utils.eq(d, 22)) ? 'nd' : ((_elm_lang$core$Native_Utils.eq(d, 3) || _elm_lang$core$Native_Utils.eq(d, 23)) ? 'rd' : 'th'));
-		var afternoon = (_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Date$hour(date),
-			12) < 0) ? 'Morning' : ((_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Date$hour(date),
-			18) < 0) ? 'Afternoon' : ((_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Date$hour(date),
-			21) < 0) ? 'Evening' : 'Night'));
-		return A4(
-			_elm_lang$core$Regex$replace,
-			_elm_lang$core$Regex$All,
-			_elm_lang$core$Regex$regex('%t'),
-			function (_p0) {
-				return th;
-			},
-			A4(
-				_elm_lang$core$Regex$replace,
-				_elm_lang$core$Regex$All,
-				_elm_lang$core$Regex$regex('%r'),
-				function (_p1) {
-					return afternoon;
-				},
-				A2(_mgold$elm_date_format$Date_Format$format, f, date)));
-	});
-var _user$project$Main$justEntered = F4(
-	function (f, prev, current, n) {
-		return (!_elm_lang$core$Native_Utils.eq(
-			f(prev),
-			n)) && _elm_lang$core$Native_Utils.eq(
-			f(current),
-			n);
-	});
-var _user$project$Main$animationOpacity = F3(
-	function (duration, ease, opacity) {
+var _user$project$Main$rootDiv = F2(
+	function (model, content) {
 		return A2(
-			_mdgriffith$elm_style_animation$Animation$toWith,
-			_mdgriffith$elm_style_animation$Animation$easing(
-				{duration: duration * _elm_lang$core$Time$second, ease: ease}),
+			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _mdgriffith$elm_style_animation$Animation$opacity(opacity),
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'width', _1: '1920px'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'height', _1: '1080px'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'color', _1: 'orange'},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
 				_1: {ctor: '[]'}
-			});
+			},
+			content);
 	});
 var _user$project$Main$update = F2(
 	function (action, model) {
-		var _p2 = action;
-		switch (_p2.ctor) {
-			case 'NewLocation':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'Tick':
-				var now = _elm_lang$core$Date$fromTime(_p2._0);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							date: now,
-							style: A4(_user$project$Main$justEntered, _elm_lang$core$Date$second, model.date, now, 59) ? A2(
-								_mdgriffith$elm_style_animation$Animation$interrupt,
-								{
-									ctor: '::',
-									_0: A3(
-										_user$project$Main$animationOpacity,
-										0.8,
-										function (x) {
-											return x * x;
-										},
-										0),
-									_1: {
-										ctor: '::',
-										_0: _mdgriffith$elm_style_animation$Animation$wait(0.25 * _elm_lang$core$Time$second),
-										_1: {
-											ctor: '::',
-											_0: A3(
-												_user$project$Main$animationOpacity,
-												0.1,
-												function (x) {
-													return ((x * x) * x) * x;
-												},
-												1),
-											_1: {ctor: '[]'}
-										}
-									}
-								},
-								model.style) : model.style
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Animate':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							style: A2(_mdgriffith$elm_style_animation$Animation$update, _p2._0, model.style)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ToggleDiagnostic':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{diagnostic: !model.diagnostic}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{size: _p2._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+		var _p0 = action;
+		if (_p0.ctor === 'NewLocation') {
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{size: _p0._0}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
 		}
 	});
 var _user$project$Main$allLocations = _elm_lang$core$Dict$fromList(
@@ -16089,84 +15994,66 @@ var _user$project$Main$allLocations = _elm_lang$core$Dict$fromList(
 		}
 	});
 var _user$project$Main$locationName = function (ip) {
-	var _p3 = A2(_elm_lang$core$Dict$get, ip, _user$project$Main$allLocations);
-	if (_p3.ctor === 'Nothing') {
+	var _p1 = A2(_elm_lang$core$Dict$get, ip, _user$project$Main$allLocations);
+	if (_p1.ctor === 'Nothing') {
 		return 'Unrecognized Location';
 	} else {
-		return _p3._0;
+		return _p1._0;
 	}
 };
-var _user$project$Main$t = _krisajenkins$formatting$Formatting$s;
-var _user$project$Main$correctTime = A2(
-	_krisajenkins$formatting$Formatting_ops['<>'],
-	_user$project$Main$t('Correct Time: '),
-	A2(
-		_krisajenkins$formatting$Formatting_ops['<>'],
-		_user$project$Main$spaceInt,
-		A2(
-			_krisajenkins$formatting$Formatting_ops['<>'],
-			_user$project$Main$t(':'),
-			A2(
-				_krisajenkins$formatting$Formatting_ops['<>'],
-				_user$project$Main$zeroInt,
-				A2(
-					_krisajenkins$formatting$Formatting_ops['<>'],
-					_user$project$Main$t(':'),
-					_user$project$Main$zeroInt)))));
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {style: a, date: b, size: c, diagnostic: d, ip: e};
-	});
-var _user$project$Main$Location = F2(
-	function (a, b) {
-		return {name: a, ip: b};
-	});
-var _user$project$Main$NewLocation = function (a) {
-	return {ctor: 'NewLocation', _0: a};
-};
-var _user$project$Main$ToggleDiagnostic = {ctor: 'ToggleDiagnostic'};
-var _user$project$Main$rootDiv = F2(
-	function (model, content) {
+var _user$project$Main$vncPage = F2(
+	function (p, ip) {
 		return A2(
-			_elm_lang$html$Html$div,
-			{
+			_elm_lang$core$Basics_ops['++'],
+			'http://novnc.com/noVNC/vnc_auto.html?host=',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				ip,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'&port=577',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(p.portDigit),
+						'&reconnect=1&reconnect_delay=5000'))));
+	});
+var _user$project$Main$projectPage = F2(
+	function (p, ip) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'http://',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				ip,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					':557',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(p.portDigit),
+						'/status/about'))));
+	});
+var _user$project$Main$projects = {
+	ctor: '::',
+	_0: {name: 'WebStatusProgram', portDigit: 0, page: true},
+	_1: {
+		ctor: '::',
+		_0: {name: 'Example 01-HelloWorld', portDigit: 5, page: false},
+		_1: {
+			ctor: '::',
+			_0: {name: 'Example 05-TimeDate', portDigit: 1, page: false},
+			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$style(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'width', _1: '1920px'},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'height', _1: '1080px'},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'overflow', _1: 'hidden'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'black'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'color', _1: 'orange'},
-										_1: {ctor: '[]'}
-									}
-								}
-							}
-						}
-					}),
+				_0: {name: 'Example 09-LogOutput', portDigit: 2, page: false},
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ToggleDiagnostic),
+					_0: {name: 'Example 17-TextEditor', portDigit: 4, page: false},
 					_1: {ctor: '[]'}
 				}
-			},
-			_elm_lang$core$Native_Utils.eq(
-				model.date,
-				_elm_lang$core$Date$fromTime(0)) ? {
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(''),
-				_1: {ctor: '[]'}
-			} : content);
-	});
+			}
+		}
+	}
+};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_user$project$Main$rootDiv,
@@ -16180,113 +16067,91 @@ var _user$project$Main$view = function (model) {
 					_0: _elm_lang$html$Html_Attributes$style(
 						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'position', _1: 'fixed'},
-							_1: {
-								ctor: '::',
-								_0: A3(_user$project$Main$opacity, model, false, '0'),
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'font-family', _1: 'monospace'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'font-size', _1: '40px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'color', _1: 'white'},
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
+							_0: {ctor: '_Tuple2', _0: 'font-size', _1: '40px'},
+							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
 				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Window.size ',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(model.size.width),
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									' ',
-									_elm_lang$core$Basics$toString(model.size.height))))),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'font-size',
-									_1: (_elm_lang$core$Native_Utils.cmp(model.size.width, 1400) > -1) ? '185px' : '150px'
-								},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'line-height', _1: '97%'},
-									_1: {
-										ctor: '::',
-										_0: A3(_user$project$Main$opacity, model, true, '0.4'),
-										_1: {ctor: '[]'}
-									}
-								}
+								_0: _elm_lang$html$Html$text(
+									_user$project$Main$locationName(model.ip)),
+								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
 					},
 					A2(
 						_elm_lang$core$List$map,
-						function (_p4) {
-							var _p5 = _p4;
+						function (project) {
 							return A2(
 								_elm_lang$html$Html$div,
-								_p5._0,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										A2(_user$project$Main$format2, _p5._1, model.date)),
-									_1: {ctor: '[]'}
-								});
-						},
-						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: _mdgriffith$elm_style_animation$Animation$render(model.style),
-								_1: A2(
+								{ctor: '[]'},
+								A2(
 									_elm_lang$core$Basics_ops['++'],
-									_user$project$Main$locationName(model.ip),
-									' Time: %l:%M')
-							},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: {ctor: '[]'},
-									_1: '%A %r'
-								},
-								_1: {
-									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: {ctor: '[]'},
-										_1: '%B %e%t %Y'
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$a,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$href(
+													A2(_user$project$Main$vncPage, project, model.ip)),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(project.name),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
 									},
-									_1: {ctor: '[]'}
-								}
-							}
-						})),
-				_1: {ctor: '[]'}
-			}
+									project.page ? {
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(' '),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$a,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$href(
+														A2(_user$project$Main$projectPage, project, model.ip)),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('(built-in web server)'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									} : {ctor: '[]'}));
+						},
+						_user$project$Main$projects))),
+			_1: {ctor: '[]'}
 		});
+};
+var _user$project$Main$Model = F2(
+	function (a, b) {
+		return {size: a, ip: b};
+	});
+var _user$project$Main$Project = F3(
+	function (a, b, c) {
+		return {name: a, portDigit: b, page: c};
+	});
+var _user$project$Main$Location = F2(
+	function (a, b) {
+		return {name: a, ip: b};
+	});
+var _user$project$Main$NewLocation = function (a) {
+	return {ctor: 'NewLocation', _0: a};
 };
 var _user$project$Main$Size = function (a) {
 	return {ctor: 'Size', _0: a};
@@ -16295,47 +16160,18 @@ var _user$project$Main$init = function (location) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
-			style: _mdgriffith$elm_style_animation$Animation$style(
-				{
-					ctor: '::',
-					_0: _mdgriffith$elm_style_animation$Animation$opacity(1.0),
-					_1: {ctor: '[]'}
-				}),
-			date: _elm_lang$core$Date$fromTime(0.0),
 			size: {width: 0, height: 0},
-			diagnostic: false,
 			ip: location.host
 		},
 		_1: A2(_elm_lang$core$Task$perform, _user$project$Main$Size, _elm_lang$window$Window$size)
 	};
 };
-var _user$project$Main$Tick = function (a) {
-	return {ctor: 'Tick', _0: a};
-};
-var _user$project$Main$Animate = function (a) {
-	return {ctor: 'Animate', _0: a};
-};
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
-			_0: A2(
-				_mdgriffith$elm_style_animation$Animation$subscription,
-				_user$project$Main$Animate,
-				{
-					ctor: '::',
-					_0: model.style,
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$core$Time$every, 0.1 * _elm_lang$core$Time$second, _user$project$Main$Tick),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$window$Window$resizes(_user$project$Main$Size),
-					_1: {ctor: '[]'}
-				}
-			}
+			_0: _elm_lang$window$Window$resizes(_user$project$Main$Size),
+			_1: {ctor: '[]'}
 		});
 };
 var _user$project$Main$main = A2(
