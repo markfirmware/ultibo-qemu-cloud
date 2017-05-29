@@ -16,7 +16,13 @@ import Time exposing (second)
 import Window
 
 
--- t = Formatting.s
+projects =
+    [ { name = "WebStatusProgram", portDigit = 0, page = True }
+    , { name = "Example 01-HelloWorld", portDigit = 5, page = False }
+    , { name = "Example 05-TimeDate", portDigit = 1, page = False }
+    , { name = "Example 09-LogOutput", portDigit = 2, page = False }
+    , { name = "Example 17-TextEditor", portDigit = 4, page = False }
+    ]
 
 
 main : Program Never Model Msg
@@ -26,13 +32,12 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = (\_ -> Sub.none)
         }
 
 
 type alias Model =
-    { size : Window.Size
-    , ip : String
+    { ip : String
     }
 
 
@@ -43,21 +48,14 @@ type alias Project =
     }
 
 
-projects =
-    [ { name = "WebStatusProgram", portDigit = 0, page = True }
-    , { name = "Example 01-HelloWorld", portDigit = 5, page = False }
-    , { name = "Example 05-TimeDate", portDigit = 1, page = False }
-    , { name = "Example 09-LogOutput", portDigit = 2, page = False }
-    , { name = "Example 17-TextEditor", portDigit = 4, page = False }
-    ]
-
-
-projectPage p ip =
+webServerUrl p ip =
     "http://" ++ ip ++ ":557" ++ toString p.portDigit ++ "/status/about"
 
 
-vncPage p ip =
-    "http://novnc.com/noVNC/vnc_auto.html?host=" ++ ip ++ "&port=577" ++ toString p.portDigit ++ "&reconnect=1&reconnect_delay=5000"
+vncUrl p ip =
+    "http://novnc.com/noVNC/vnc_auto.html?host=" ++
+    ip ++ "&port=577" ++ toString p.portDigit ++
+    "&reconnect=1&reconnect_delay=5000"
 
 
 type alias Location =
@@ -83,23 +81,14 @@ locationName ip =
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    ( { size = { width = 0, height = 0 }
-      , ip = location.host
+    ( { ip = location.host
       }
-    , Task.perform Size Window.size
+    , Cmd.none
     )
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Window.resizes Size
-        ]
-
-
 type Msg
-    = Size Window.Size
-    | NewLocation Navigation.Location
+    = NewLocation Navigation.Location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -110,15 +99,8 @@ update action model =
             , Cmd.none
             )
 
-        Size s ->
-            ( { model
-                | size = s
-              }
-            , Cmd.none
-            )
 
-
-rootDiv model content =
+rootDiv content =
     div
         [ style
             [ ( "width", "1920px" )
@@ -126,28 +108,38 @@ rootDiv model content =
 --          , ( "overflow", "hidden" )
             , ( "background-color", "white" )
             , ( "color", "orange" )
+            , ( "font-size", "40px" )
+            , ( "font-family", "monospace" )
             ]
         ]
         content
 
 
+nameLine model =
+    div [] <| [ text <| locationName model.ip ]
+
+
+vncLink project model =
+    a [ href <| vncUrl project model.ip ] [ text project.name ]
+
+
+webServerLink project model =
+    a [ href <| webServerUrl project model.ip ] [ text "(built-in web server)" ]
+
+
+maybeMore b x =
+    if b then
+        [ text " " 
+        , x
+        ]
+    else
+        []
+
+
 view : Model -> Html Msg
 view model =
-    rootDiv
-        model
-        [ div
-          [ style
-            [ ( "font-size", "40px" )
-            ]
-          ]
-          ([ div [] <| [ text <| locationName model.ip ] ] ++
-          (List.map (\project -> div [] <|
-              [ a [ href <| vncPage project model.ip ] [ text project.name ]
-              ] ++
-              (if project.page then
-                  [ text " " 
-                  , (a [ href <| projectPage project model.ip ]
-                       [ text "(built-in web server)" ])
-                  ]
-              else [])) projects))
-        ]
+    rootDiv <|
+      [ nameLine model ] ++
+      List.map (\project -> div [] <|
+          [ vncLink project model ] ++
+           maybeMore project.page (webServerLink project model)) projects
