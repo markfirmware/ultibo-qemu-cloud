@@ -16,10 +16,6 @@ elif portdigit == '2':
     project = 'Examples'
     branch = 'pilot-test-20170511'
     folder = '09-LogOutput'
-elif portdigit == '3':
-    project = 'ultibo-webstatus'
-    branch = 'wrong-line-20170519'
-    folder = ''
 elif portdigit == '4':
     project = 'Examples'
     branch = 'pilot-test-20170511'
@@ -30,7 +26,7 @@ elif portdigit == '5':
     folder = '01-HelloWorld'
 else:
     project = 'ultibo-webstatus'
-    branch = 'test-20170425'
+    branch = 'master'
     folder = ''
 
 def getbuild (circle, username, project, branch):
