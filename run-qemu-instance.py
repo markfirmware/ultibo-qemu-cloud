@@ -26,7 +26,7 @@ elif portdigit == '5':
     folder = '01-HelloWorld'
 else:
     project = 'ultibo-webstatus'
-    branch = 'ultibo-1.3.327'
+    branch = 'master'
     folder = ''
 
 def getbuild (circle, username, project, branch):
@@ -88,7 +88,7 @@ def runqemu (kernelpath):
                               "-usb",
                               "-net", "nic,macaddr=52:54:00:12:34:5" + portdigit,
                               "-net", "user," + ports,
-                              "-vnc", ":7" + portdigit + ",websocket"],
+                              "-vnc", ":7" + portdigit + ",websocket=577" + portdigit],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
