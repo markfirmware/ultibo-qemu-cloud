@@ -26,7 +26,7 @@ elif portdigit == '5':
     folder = '01-HelloWorld'
 else:
     project = 'ultibo-webstatus'
-    branch = '1.3.363'
+    branch = '1.3.373'
     folder = ''
 
 def getbuild (circle, username, project, branch):
